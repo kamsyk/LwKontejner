@@ -8,16 +8,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Environment;
-import android.provider.BaseColumns;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ListView;
 
 import androidx.core.app.ActivityCompat;
@@ -30,16 +27,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class ErrorList extends AppCompatActivity {
     ContainerDbHelper dbHelper = new ContainerDbHelper(this);
     private LinearProgressIndicator progressBar = null;
-    private int iRowIndex = 0;
     File folder = null;
     Context context = this;
 
@@ -82,26 +78,15 @@ public class ErrorList extends AppCompatActivity {
 
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        String[] projection = {
-                BaseColumns._ID,
-                LwKontejnerDbDict.OdpadEntry.COLUMN_NAME_DATUM,
-                LwKontejnerDbDict.OdpadEntry.COLUMN_NAME_PROJEKT,
-                LwKontejnerDbDict.OdpadEntry.COLUMN_NAME_CHYBA_NAME,
-                LwKontejnerDbDict.OdpadEntry.COLUMN_NAME_CHYBA_ID,
-                LwKontejnerDbDict.OdpadEntry.COLUMN_NAME_KS
-        };
-
-        Cursor cursor = db.query(
+      return db.query(
                 LwKontejnerDbDict.OdpadEntry.TABLE_NAME,    // The table to query
                 null,                               // The array of columns to return (pass null to get all)
                 null,                               // The columns for the WHERE clause
                 null,                           // The values for the WHERE clause
                 null,                               // don't group the rows
                 null,                               // don't filter by row groups
-                null                                // The sort order
-        );
+                null );                               // The sort order
 
-        return cursor;
     }
 
 
@@ -118,11 +103,9 @@ public class ErrorList extends AppCompatActivity {
             builder1.setMessage("Export dat selhal");
             builder1.setCancelable(true);
             builder1.setNeutralButton("Zavřít",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    });
+                    (DialogInterface dialog, int id) ->
+                        dialog.cancel()
+                    );
 
             AlertDialog alert11 = builder1.create();
             alert11.show();
@@ -131,8 +114,7 @@ public class ErrorList extends AppCompatActivity {
 
     private boolean isExportFolderExist() {
         folder = new File(Environment.getExternalStorageDirectory() + "/LwKontejnerExport");
-        //String strFolder = this.getExternalFilesDir(null).getAbsolutePath() + "/LwKontejnerExport";
-        //folder = new File(strFolder);
+
         boolean isFolderExist = true;
         if (!folder.exists()) {
             //Toast.makeText(MainActivity.this, "Directory Does Not Exist, Create It", Toast.LENGTH_SHORT).show();
@@ -144,11 +126,9 @@ public class ErrorList extends AppCompatActivity {
             builder1.setMessage("Zkontrolujte zda má aplikace oprávnění pro zápis do úložiště");
             builder1.setCancelable(true);
             builder1.setNeutralButton("Zavřít",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    });
+                    (DialogInterface dialog, int id) ->
+                        dialog.cancel()
+                    );
 
             AlertDialog alert11 = builder1.create();
             alert11.show();
@@ -161,6 +141,10 @@ public class ErrorList extends AppCompatActivity {
 
     class ExportAsyncTask extends AsyncTask<Void, Integer, Boolean> {
         String fileName = null;
+
+        public ExportAsyncTask() {
+            super();
+        }
 
         @Override
         protected Boolean doInBackground(Void... params) {
@@ -175,31 +159,28 @@ public class ErrorList extends AppCompatActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             progressBar.setVisibility(View.GONE);
+            AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
             if(result) {
-                AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
+
                 builder1.setTitle("Export byl dokončen");
                 builder1.setMessage("Data byla uložena do souboru " + folder.getAbsolutePath() + "/" + fileName);
                 builder1.setCancelable(true);
                 builder1.setNeutralButton("Zavřít",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
+                        (DialogInterface dialog, int id) ->
+                            dialog.cancel()
+                        );
 
                 AlertDialog alert11 = builder1.create();
                 alert11.show();
             } else {
-                AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
+
                 builder1.setTitle("Došlo k chybě");
                 builder1.setMessage("Export dat selhal");
                 builder1.setCancelable(true);
                 builder1.setNeutralButton("Zavřít",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
+                        (DialogInterface dialog, int id) ->
+                            dialog.cancel()
+                        );
 
                 AlertDialog alert11 = builder1.create();
                 alert11.show();
@@ -219,7 +200,7 @@ public class ErrorList extends AppCompatActivity {
 
             try {
                 Date date = new Date();
-                DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmsss");
+                DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmsss", Locale.US);
                 String strDate = dateFormat.format(date);
 
                 fileName = "Lwe" + strDate + ".csv";
@@ -227,7 +208,6 @@ public class ErrorList extends AppCompatActivity {
                 exportFile.createNewFile();
 
                 FileOutputStream fOut = new FileOutputStream(exportFile);
-                //OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut, "windows-1250");
                 OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut, StandardCharsets.UTF_8);
 
                 myOutWriter.write("\ufeff"); // Add BOM to UTF-8 necessary for displaying Czech chars in excel in windows
@@ -241,24 +221,17 @@ public class ErrorList extends AppCompatActivity {
                 myOutWriter.append(strHeader);
 
                 Cursor cursor = getOdpadCursor();
-                int iCount = cursor.getCount();
                 int iRowIndex = 0;
-
 
                 while (cursor.moveToNext()) {
                     String strLine = getExportLine(cursor);
                     myOutWriter.append(strLine);
-                    //progressBar.setProgress(iRowIndex);
-                    //Thread.sleep(100);
                     publishProgress(iRowIndex);
                     iRowIndex++;
 
                 }
                 myOutWriter.close();
                 fOut.close();
-
-
-
             } catch(Exception ex) {
                 throw ex;
             }
