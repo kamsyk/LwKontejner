@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Lw Kontejner</string>
+    <color name="wv_color">#b4c6e7</color>
+    <color name="audi_color">#f8cbad</color>
+    <color name="btn_color">#6200ee</color>
+    <color name="btn_border_color">#888</color>
+    <color name="project_text_color">#b00020</color>
+    <string name="title_activity_error_list">ErrorList</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+</resources>
