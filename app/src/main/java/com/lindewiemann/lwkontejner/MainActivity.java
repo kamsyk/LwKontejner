@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
 
         updateButtonsColor();
 
-        //Toast.makeText(this, m_strSelCode, Toast.LENGTH_LONG).show();
     }
 
     public void saveClick(View btn){
