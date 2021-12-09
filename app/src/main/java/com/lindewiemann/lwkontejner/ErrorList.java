@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -64,7 +65,7 @@ public class ErrorList extends AppCompatActivity {
     private void getOdpadList() {
         Cursor cursor = getOdpadCursor();
 
-        ListView lvItems = (ListView) findViewById(R.id.lvOdpad);
+        ListView lvItems = findViewById(R.id.lvOdpad);
         // Setup cursor adapter using cursor from last step
         OdpadItemAdapter todoAdapter = new OdpadItemAdapter(this, cursor);
         // Attach cursor adapter to the ListView
@@ -92,8 +93,8 @@ public class ErrorList extends AppCompatActivity {
 
     public void exportToFile(View v) {
         try {
-            progressBar = (LinearProgressIndicator) findViewById(R.id.pgbExport);
-            if (isExportFolderExist()) {
+            progressBar = findViewById(R.id.pgbExport);
+            if (isExportFolderExist(v.getContext())) {
                 progressBar.setVisibility(View.VISIBLE);
                 new ExportAsyncTask().execute();
             }
@@ -112,8 +113,15 @@ public class ErrorList extends AppCompatActivity {
         }
     }
 
-    private boolean isExportFolderExist() {
-        folder = new File(Environment.getExternalStorageDirectory() + "/LwKontejnerExport");
+    private boolean isExportFolderExist(Context context) {
+        //folder = new File(Environment.getExternalStorageDirectory() + "/LwKontejnerExport");
+
+        /*PackageManager m = getPackageManager();
+        String strPackName = getPackageName();
+        PackageInfo pInfo = m.getPackageInfo(strPackName, 0);
+        folder = new File(pInfo.applicationInfo.dataDir);*/
+
+        folder = context.getExternalFilesDir(null);
 
         boolean isFolderExist = true;
         if (!folder.exists()) {
