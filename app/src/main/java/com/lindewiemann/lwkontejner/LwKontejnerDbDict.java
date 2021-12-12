@@ -15,5 +15,6 @@ public final class LwKontejnerDbDict {
         public static final String COLUMN_NAME_CHYBA_NAME = "chyba_name";
         public static final String COLUMN_NAME_CHYBA_ID = "chyba_id";
         public static final String COLUMN_NAME_KS = "ks";
+        public static final String COLUMN_NAME_USER_CODE = "user_code";
     }
 }
