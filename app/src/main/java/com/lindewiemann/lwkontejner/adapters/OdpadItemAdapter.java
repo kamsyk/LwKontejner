@@ -35,6 +35,7 @@ public class OdpadItemAdapter extends CursorAdapter {
         TextView tvProjekt = (TextView) view.findViewById(R.id.tvProjekt);
         TextView tvChyba = (TextView) view.findViewById(R.id.tvChyba);
         TextView tvKs = (TextView) view.findViewById(R.id.tvKs);
+        TextView tvUserCode = (TextView) view.findViewById(R.id.tvUserCode);
 
         // Extract properties from cursor
         String strDateTime = cursor.getString(cursor.getColumnIndexOrThrow(LwKontejnerDbDict.OdpadEntry.COLUMN_NAME_DATUM));
@@ -49,9 +50,9 @@ public class OdpadItemAdapter extends CursorAdapter {
         String strDate = strDateItems[0];
         String strTime = strDateItems[1];
         strChyba += " (Kód chyby: " + String.valueOf(iChyba) + ")";
-        /*if(strUserCode != null) {
-            strProject += " (Kód uživatele:" + strUserCode + ")";
-        }*/
+        if(strUserCode != null) {
+            strUserCode = "Kód uživatele: " + strUserCode;
+        }
 
         // Populate fields with extracted properties
         tvDatum.setText(strDate);
@@ -59,5 +60,6 @@ public class OdpadItemAdapter extends CursorAdapter {
         tvProjekt.setText(strProject);
         tvChyba.setText(strChyba);
         tvKs.setText(strKs);
+        tvUserCode.setText(strUserCode);
     }
 }
