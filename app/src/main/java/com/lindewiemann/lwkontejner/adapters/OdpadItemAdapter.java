@@ -40,6 +40,7 @@ public class OdpadItemAdapter extends CursorAdapter {
         String strDateTime = cursor.getString(cursor.getColumnIndexOrThrow(LwKontejnerDbDict.OdpadEntry.COLUMN_NAME_DATUM));
         String strProject = cursor.getString(cursor.getColumnIndexOrThrow(LwKontejnerDbDict.OdpadEntry.COLUMN_NAME_PROJEKT));
         String strChyba = cursor.getString(cursor.getColumnIndexOrThrow(LwKontejnerDbDict.OdpadEntry.COLUMN_NAME_CHYBA_NAME));
+        String strUserCode = cursor.getString(cursor.getColumnIndexOrThrow(LwKontejnerDbDict.OdpadEntry.COLUMN_NAME_USER_CODE));
         int iChyba = cursor.getInt(cursor.getColumnIndexOrThrow(LwKontejnerDbDict.OdpadEntry.COLUMN_NAME_CHYBA_ID));
         int iKs = cursor.getInt(cursor.getColumnIndexOrThrow(LwKontejnerDbDict.OdpadEntry.COLUMN_NAME_KS));
 
@@ -48,6 +49,9 @@ public class OdpadItemAdapter extends CursorAdapter {
         String strDate = strDateItems[0];
         String strTime = strDateItems[1];
         strChyba += " (Kód chyby: " + String.valueOf(iChyba) + ")";
+        /*if(strUserCode != null) {
+            strProject += " (Kód uživatele:" + strUserCode + ")";
+        }*/
 
         // Populate fields with extracted properties
         tvDatum.setText(strDate);

@@ -2,6 +2,7 @@ package com.lindewiemann.lwkontejner;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -13,10 +14,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.text.DateFormat;
@@ -28,6 +33,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     String m_strSelCode = null;
     String m_strSelText = null;
+    Editable m_strUserCode = null;
 
     ContainerDbHelper dbHelper = new ContainerDbHelper(this);
 
@@ -49,12 +55,19 @@ public class MainActivity extends AppCompatActivity {
         Button btn = (Button)view;
         int btnId = btn.getId();
         String strTag = btn.getTag().toString();
+
+        EditText txtUserCode = (EditText) findViewById(R.id.txtUserCode);
+
         if(strTag == m_strSelCode) {
             m_strSelCode = null;
             m_strSelText = null;
+            m_strUserCode = null;
+            txtUserCode.setText("");
         } else {
+
             m_strSelCode = strTag;
             m_strSelText = btn.getText().toString();
+            m_strUserCode = txtUserCode.getText();
         }
 
         updateButtonsColor();
@@ -80,11 +93,30 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        if(m_strUserCode == null || m_strUserCode.length() == 0) {
+            AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+            builder1.setTitle("Upozornění");
+            builder1.setMessage("Zadejte Kód uživatele");
+            builder1.setCancelable(true);
+            builder1.setNeutralButton("Zavřít",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+
+            AlertDialog alert11 = builder1.create();
+            alert11.show();
+
+            return;
+        }
+
         try {
             long newRowId = saveToDb();
             Toast.makeText(getApplicationContext(), "Data byla uložena (id " + newRowId + ")", Toast.LENGTH_SHORT).show();
             m_strSelCode = null;
             m_strSelText = null;
+            m_strUserCode = null;
             updateButtonsColor();
         } catch(Exception ex) {
             AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
@@ -125,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
         values.put(LwKontejnerDbDict.OdpadEntry.COLUMN_NAME_PROJEKT, strProject);
         values.put(LwKontejnerDbDict.OdpadEntry.COLUMN_NAME_KS, 1);
         values.put(LwKontejnerDbDict.OdpadEntry.COLUMN_NAME_DATUM, strDate);
+        values.put(LwKontejnerDbDict.OdpadEntry.COLUMN_NAME_USER_CODE, m_strUserCode.toString());
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(LwKontejnerDbDict.OdpadEntry.TABLE_NAME, null, values);
@@ -133,7 +166,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateButtonsColor() {
+        Boolean isButtonSelected = false;
         ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
+        EditText txtUserCode = (EditText) findViewById(R.id.txtUserCode);
+        LinearLayout llBottom = (LinearLayout) findViewById(R.id.llBottom);
         List<Button> btns = find(root, Button.class);
         for(int i=0; i<btns.size(); i++) {
             if(btns.get(i).getTag() == null) {
@@ -142,10 +178,39 @@ public class MainActivity extends AppCompatActivity {
             String strTagBtn = btns.get(i).getTag().toString();
             if(strTagBtn == m_strSelCode) {
                 btns.get(i).setBackgroundColor(Color.parseColor("#008b00"));
+                txtUserCode.setVisibility(View.VISIBLE);
+
+                ViewGroup.LayoutParams params = llBottom.getLayoutParams();
+                params.height = 220;
+                llBottom.setLayoutParams(params);
+
+                isButtonSelected = true;
             } else {
                 btns.get(i).setBackgroundColor(Color.parseColor("#6200ee"));
             }
         }
+
+        if(isButtonSelected) {
+            txtUserCode.requestFocus();
+            showKeyboard(this);
+        } else {
+            hideUserCode();
+        }
+    }
+
+    private void hideUserCode() {
+        EditText txtUserCode = (EditText) findViewById(R.id.txtUserCode);
+        LinearLayout llBottom = (LinearLayout) findViewById(R.id.llBottom);
+        txtUserCode.setText("");
+        m_strUserCode = null;
+        txtUserCode.setVisibility(View.GONE);
+
+        ViewGroup.LayoutParams params = llBottom.getLayoutParams();
+        params.height = 130;
+        llBottom.setLayoutParams(params);
+
+
+        hideKeyboard(this);
     }
 
     public static <T extends View> List<T> find(ViewGroup root, Class<T> type) {
@@ -179,6 +244,28 @@ public class MainActivity extends AppCompatActivity {
     public void errorListClick(View view) {
         Intent intent = new Intent(this, ErrorList.class);
         startActivity(intent);
+    }
+
+    public void hideKeyboard(Activity activity) {
+        /*InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);*/
+
+        EditText txtUserCode = (EditText) findViewById(R.id.txtUserCode);
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(txtUserCode.getWindowToken(), 0);
+    }
+
+    public void showKeyboard(Activity activity) {
+
+        EditText txtUserCode = (EditText) findViewById(R.id.txtUserCode);
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(txtUserCode, InputMethodManager.SHOW_IMPLICIT);
     }
 }
 

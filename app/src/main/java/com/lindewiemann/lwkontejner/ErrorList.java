@@ -222,6 +222,7 @@ public class ErrorList extends AppCompatActivity {
 
                 String strHeader = "Datum,"
                         + "Projekt,"
+                        + "Kód uživatele,"
                         + "Kód chyby,"
                         + "Popis chyby,"
                         + "Počet kusů"
@@ -249,6 +250,7 @@ public class ErrorList extends AppCompatActivity {
             String strDateTime = cursor.getString(cursor.getColumnIndexOrThrow(LwKontejnerDbDict.OdpadEntry.COLUMN_NAME_DATUM));
             String strProject = cursor.getString(cursor.getColumnIndexOrThrow(LwKontejnerDbDict.OdpadEntry.COLUMN_NAME_PROJEKT));
             String strChyba = cursor.getString(cursor.getColumnIndexOrThrow(LwKontejnerDbDict.OdpadEntry.COLUMN_NAME_CHYBA_NAME));
+            String strUserCode = cursor.getString(cursor.getColumnIndexOrThrow(LwKontejnerDbDict.OdpadEntry.COLUMN_NAME_USER_CODE));
             int iChyba = cursor.getInt(cursor.getColumnIndexOrThrow(LwKontejnerDbDict.OdpadEntry.COLUMN_NAME_CHYBA_ID));
             int iKs = cursor.getInt(cursor.getColumnIndexOrThrow(LwKontejnerDbDict.OdpadEntry.COLUMN_NAME_KS));
 
@@ -257,6 +259,7 @@ public class ErrorList extends AppCompatActivity {
 
             String exportLine = strDateTime + ","
                     + strProject + ","
+                    + strUserCode + ","
                     + strKodChyby + ","
                     + strChyba + ","
                     + strKs;
