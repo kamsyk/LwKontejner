@@ -446,7 +446,7 @@
                 android:hint="Kód uživatele"
                 android:inputType="numberPassword"
                 android:text=""
-                android:textSize="18dp"
+                android:textSize="24dp"
                 android:visibility="gone" />
 
             <Button

@@ -209,7 +209,6 @@ public class MainActivity extends AppCompatActivity {
         params.height = 130;
         llBottom.setLayoutParams(params);
 
-
         hideKeyboard(this);
     }
 
